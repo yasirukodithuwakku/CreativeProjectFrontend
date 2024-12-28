@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
-
-    // Notify the parent and navigate to the dashboard
-    onLogin();
-    navigate('/dashboard');
+    axios.post('http://127.0.0.1:3000/login-user', {
+      email: email,
+      password: password
+    })
+    .then(response => {
+      console.log(response.data);
+      navigate("/dashboard");
+    })
+    .catch(error => {
+      console.error("There was an error!", error);
+    });
   };
 
   return (
@@ -40,7 +47,10 @@ const Login = ({ onLogin }) => {
             required
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
           Login
         </button>
       </form>
