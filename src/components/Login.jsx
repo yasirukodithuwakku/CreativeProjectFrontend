@@ -10,7 +10,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post('http://127.0.0.1:3000/login-user', {
+    axios.post('http://localhost:3000/login-user', {
       email: email,
       password: password
     })
