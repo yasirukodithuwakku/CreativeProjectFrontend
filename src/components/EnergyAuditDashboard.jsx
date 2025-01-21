@@ -25,7 +25,15 @@ function EnergyAuditDashboard() {
 
   //annual report's data
   const [annualReport, setAnnualReport] = useState([]);
-  const [monthlyAveragesOfEachMonth, setMonthlyAveragesOfEachMonth] = useState( [] );
+  const [monthlyAveragesOfEachMonth, setMonthlyAveragesOfEachMonth] = useState(
+    []
+  );
+  const [weeklyAverageOfEachMonth, setWeeklyAverageOfEachMonth] = useState([]);
+  const [weeklyAverageOfPowerData, setWeeklyAverageOfPowerData] = useState([]);
+  const [monthlyAverageOfPowerData, setMonthlyAverageOfPowerData] = useState(
+    []
+  );
+
   useEffect(() => {
     const annualEnergyReport = async () => {
       try {
@@ -34,9 +42,11 @@ function EnergyAuditDashboard() {
           params: { year, month },
         });
         console.log(response.data);
-        setAnnualReport(response.data);        
+        setAnnualReport(response.data);
         setMonthlyAveragesOfEachMonth(response.data.monthlyAveragesOfEachMonth);
-        console.log(monthlyAveragesOfEachMonth);
+        setWeeklyAverageOfEachMonth(response.data.weeklyAverages);
+        setWeeklyAverageOfPowerData(response.data.powerWeeklyAverages);
+        setMonthlyAverageOfPowerData(response.data.powerMonthlyAveragesOfEachMonth);
       } catch (error) {
         console.error("Error fetching data:", error);
         console.log(error.response.data);
@@ -119,11 +129,34 @@ function EnergyAuditDashboard() {
   const barData = {
     labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
     datasets: [
-      { label: "Power", data: [25, 20, 18, 12], backgroundColor: "#FFD700" },
-      { label: "Humidity", data: [10, 18, 12, 15], backgroundColor: "#DC143C" },
+      {
+        label: "Power",
+        data: [
+          weeklyAverageOfPowerData?.week1?.Power/100 || 0,
+          weeklyAverageOfPowerData?.week2?.Power/100 || 0,
+          weeklyAverageOfPowerData?.week3?.Power/100 || 0,
+          weeklyAverageOfPowerData?.week4?.Power/100 || 0,
+        ],
+        backgroundColor: "#FFD700",
+      },
+      {
+        label: "Humidity",
+        data: [
+          weeklyAverageOfEachMonth?.week1?.Humidity || 0,
+          weeklyAverageOfEachMonth?.week2?.Humidity || 0,
+          weeklyAverageOfEachMonth?.week3?.Humidity || 0,
+          weeklyAverageOfEachMonth?.week4?.Humidity || 0,
+        ],
+        backgroundColor: "#DC143C",
+      },
       {
         label: "Temperature",
-        data: [12, 15, 20, 10],
+        data: [
+          weeklyAverageOfEachMonth?.week1?.Temperature || 0,
+          weeklyAverageOfEachMonth?.week2?.Temperature || 0,
+          weeklyAverageOfEachMonth?.week3?.Temperature || 0,
+          weeklyAverageOfEachMonth?.week4?.Temperature || 0,
+        ],
         backgroundColor: "#4169E1",
       },
     ],
@@ -147,21 +180,39 @@ function EnergyAuditDashboard() {
     datasets: [
       {
         label: "Power",
-        data: [10, 15, 25, 20, 30, 18, 24, 15, 10, 12, 14],
+        data:
+          monthlyAverageOfPowerData &&
+          typeof monthlyAverageOfPowerData === "object"
+            ? Object.values(monthlyAverageOfPowerData).map(
+                (item) => item.Power/100
+              )
+            : [],
         borderColor: "#1E90FF",
         fill: false,
         tension: 0.4,
       },
       {
         label: "Temperature",
-        data: [28, 29, 25, 20, 30, 28, 24, 27, 30, 31, 24],
+        data:
+          monthlyAveragesOfEachMonth &&
+          typeof monthlyAveragesOfEachMonth === "object"
+            ? Object.values(monthlyAveragesOfEachMonth).map(
+                (item) => item.Temperature
+              )
+            : [],
         borderColor: "#DC253C",
         fill: false,
         tension: 0.4,
       },
       {
         label: "Humidity",
-        data: [10, 1, 45, 23, 80, 16, 27, 19, 60, 56, 36],
+        data:
+          monthlyAveragesOfEachMonth &&
+          typeof monthlyAveragesOfEachMonth === "object"
+            ? Object.values(monthlyAveragesOfEachMonth).map(
+                (item) => item.Humidity
+              )
+            : [],
         borderColor: "#0000FF",
         fill: false,
         tension: 0.4,
