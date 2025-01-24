@@ -34,6 +34,9 @@ function EnergyAuditDashboard() {
     []
   );
 
+  // state for popup
+  const [showPopup, setShowPopup] = useState(false);
+
   useEffect(() => {
     const annualEnergyReport = async () => {
       try {
@@ -46,7 +49,9 @@ function EnergyAuditDashboard() {
         setMonthlyAveragesOfEachMonth(response.data.monthlyAveragesOfEachMonth);
         setWeeklyAverageOfEachMonth(response.data.weeklyAverages);
         setWeeklyAverageOfPowerData(response.data.powerWeeklyAverages);
-        setMonthlyAverageOfPowerData(response.data.powerMonthlyAveragesOfEachMonth);
+        setMonthlyAverageOfPowerData(
+          response.data.powerMonthlyAveragesOfEachMonth
+        );
       } catch (error) {
         console.error("Error fetching data:", error);
         console.log(error.response.data);
@@ -132,10 +137,10 @@ function EnergyAuditDashboard() {
       {
         label: "Power",
         data: [
-          weeklyAverageOfPowerData?.week1?.Power/100 || 0,
-          weeklyAverageOfPowerData?.week2?.Power/100 || 0,
-          weeklyAverageOfPowerData?.week3?.Power/100 || 0,
-          weeklyAverageOfPowerData?.week4?.Power/100 || 0,
+          weeklyAverageOfPowerData?.week1?.Power / 100 || 0,
+          weeklyAverageOfPowerData?.week2?.Power / 100 || 0,
+          weeklyAverageOfPowerData?.week3?.Power / 100 || 0,
+          weeklyAverageOfPowerData?.week4?.Power / 100 || 0,
         ],
         backgroundColor: "#FFD700",
       },
@@ -184,7 +189,7 @@ function EnergyAuditDashboard() {
           monthlyAverageOfPowerData &&
           typeof monthlyAverageOfPowerData === "object"
             ? Object.values(monthlyAverageOfPowerData).map(
-                (item) => item.Power/100
+                (item) => item.Power / 100
               )
             : [],
         borderColor: "#1E90FF",
@@ -221,8 +226,8 @@ function EnergyAuditDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans p-5">
-      <div className="bg-slate-400 py-4 text-center rounded-md">
+    <div className="min-h-screen bg-gradient-to-r from-gray-100 to-gray-200 font-sans p-5">
+      <div className="bg-gradient-to-r from-slate-500 to-slate-700 py-4 text-center rounded-md shadow-lg">
         <h1 className="text-3xl font-bold text-white">
           Room-Level Energy and Environmental Conditions Monitoring Device
         </h1>
@@ -235,7 +240,7 @@ function EnergyAuditDashboard() {
           </h3>
           <div className="flex justify-center mb-4">
             <select
-              className="border border-gray-300 rounded-md p-2 mr-2"
+              className="border border-gray-300 rounded-md p-2 mr-2 shadow-sm"
               value={year}
               onChange={(e) => setYear(e.target.value)}
             >
@@ -246,7 +251,7 @@ function EnergyAuditDashboard() {
               <option value="2021">2021</option>
             </select>
             <select
-              className="border border-gray-300 rounded-md p-2"
+              className="border border-gray-300 rounded-md p-2 shadow-sm"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
             >
@@ -265,57 +270,93 @@ function EnergyAuditDashboard() {
               <option value="12">December</option>
             </select>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-white p-4 rounded-lg shadow-lg">
             <Bar data={barData} />
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 p-4 flex flex-col justify-center ">
+        <div className="w-full md:w-1/2 p-4 flex flex-col justify-center">
           <h3 className="text-xl font-semibold text-center mb-4 relative">
-            <div className="absolute top-2 right-2 rounded-full bg-blue-600 w-4 h-4"></div>
+            <div className="absolute top-2 right-2 rounded-full bg-green-600 w-4 h-4"></div>
+            <div className="absolute top-2 right-2 rounded-full bg-green-600 w-4 h-4 animate-ping"></div>
             Real Time Metrics
           </h3>
-          <div className="div grid grid-cols-2 items-center justify-center gap-4  ">
-            <div className="flex flex-col items-center bg-sky-100  rounded-xl py-5 relative">
+          <div className="grid grid-cols-2 items-center justify-center gap-4">
+            <div className="flex flex-col items-center bg-sky-100 rounded-xl py-5 shadow-md">
               <h4 className="text-lg font-semibold">Temperature</h4>
-              <p className="text-4xl font-semibold text-blue-500 ">
+              <p className="text-4xl font-semibold text-blue-500">
                 {temperature[0]?.toFixed(2)}°C
-                {/* 20.5°C */}
               </p>
             </div>
-            <div className="flex flex-col items-center bg-red-100 rounded-xl py-5 relative">
+            <div className="flex flex-col items-center bg-red-100 rounded-xl py-5 shadow-md">
               <h4 className="text-lg font-semibold">Humidity</h4>
               <p className="text-4xl font-semibold text-red-500">
-                {humidity[0]?.toFixed(2)}%{/* 75.7% */}
+                {humidity[0]?.toFixed(2)}%
               </p>
             </div>
-            <div className="flex flex-col items-center bg-yellow-100 rounded-xl py-5 relative">
+            <div className="flex flex-col items-center bg-yellow-100 rounded-xl py-5 shadow-md">
               <h4 className="text-lg font-semibold">Light Intensity</h4>
               <p className="text-4xl font-semibold text-yellow-500">
                 {lightIntensity[0]?.toFixed(2)} LUX
-                {/* 7.5 LUX */}
               </p>
             </div>
-            <div className="flex flex-col items-center bg-green-100 rounded-xl py-5 relative">
+            <div className="flex flex-col items-center bg-green-100 rounded-xl py-5 shadow-md">
               <h4 className="text-lg font-semibold">Power</h4>
               <p className="text-4xl font-semibold text-green-500">
-                {power[0]?.toFixed(2)} W{/* 25.5 W */}
+                {power[0]?.toFixed(2)} W
               </p>
             </div>
           </div>
+          <div className="mt-4 p-4 text-center">
+            <h3 className="text-lg font-semibold">
+              Last Updated:{" "}
+              <span className="font-bold text-blue-600">
+                {new Date(environmentalData[0]?.Timestamp).toLocaleString()}
+              </span>
+            </h3>
+          </div>
         </div>
       </div>
-
-      {/* Line Chart Section */}
 
       <div className="mt-8 p-4">
         <h3 className="text-xl font-semibold text-center mb-4">
           Annual Energy Report
         </h3>
-        <div className="bg-white p-4 rounded-lg shadow-md">
+        <div className="bg-white p-4 rounded-lg shadow-lg">
           <Line data={lineData} />
         </div>
       </div>
+
+      <div className="fixed bottom-4 right-4">
+        <button
+          className="bg-blue-500 text-white p-3 rounded-full shadow-lg"
+          onClick={() => setShowPopup(true)}
+        >
+          Guidelines
+        </button>
+      </div>
+
+      {showPopup && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-2xl font-bold mb-4">
+              Guidelines and Suggestions
+            </h2>
+            <ul className="list-disc pl-5">
+              <li>Ensure the temperature remains within the optimal range.</li>
+              <li>Maintain humidity levels to prevent mold growth.</li>
+              <li>Monitor light intensity to save energy.</li>
+              <li>Regularly check power consumption to identify anomalies.</li>
+            </ul>
+            <button
+              className="mt-4 bg-red-500 text-white p-2 rounded"
+              onClick={() => setShowPopup(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
